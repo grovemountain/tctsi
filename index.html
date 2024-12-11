@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: black;
+            color: white;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+        }
+        #message {
+            font-size: 48px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            width: 80%;
+            margin: 0 auto;
+            word-wrap: break-word;
+        }
+        #playButton {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background-color: white;
+            color: black;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        #audioStatus {
+            position: fixed;
+            top: 60px;
+            left: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+    <title>The Car That Sells Itself - Introduction</title>
+</head>
+<body>
+    <button id="playButton">Start</button>
+    <div id="audioStatus"></div>
+    <div id="message"></div>
+    <audio id="backgroundMusic">
+        <source src="ElevenLabs_2024-12-10T12_27_56_Bill_pre_s50_sb75_se30_b_m2.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const messages = [
+            { text: "In the world of automotive sales, one innovation is about to change everything...", duration: 2000 },
+            { text: "Imagine stepping into a showroom where every car has a story to tell. Where cutting-edge technology meets the art of automotive excellence. Welcome to the future of car sales experience ", duration: 3000 },
+            { text: "Our Digital Silent Sales assistant screen technology sets the stage, showing the car features in a digital and interactive way. But that's just the beginning...", duration: 3000 },
+            { text: "What if your next car could be... your next conversation? The moment you sit down into the driver's seat and close the door, something magical happens.", duration: 2000 },
+            { text: "The car in the showroom comes alive, becoming your personal automotive guide.", duration: 2000 },
+            { text: "Through the power of AI smart technology - every vehicle becomes its own master storyteller.", duration: 2000 },
+            { text: "This isn't just another car buying experience. This is the dawn of a new era in automotive retail. This... is!", duration: 2000 },       
+            { text: "The Car That Sells Itself.", duration: 5000 }
+            ];
+
+let isPlaying = false;
+const audio = document.getElementById('backgroundMusic');
+const playButton = document.getElementById('playButton');
+const audioStatus = document.getElementById('audioStatus');
+
+function showMessage(messageObj) {
+    const messageElement = document.getElementById('message');
+    messageElement.textContent = messageObj.text;
+    messageElement.style.opacity = 1;
+    
+    setTimeout(() => {
+        messageElement.style.opacity = 0;
+    }, messageObj.duration - 500);
+}
+
+function redirectToAssistant() {
+    window.location.href = 'tctsi/assistant/';
+}
+
+async function playMessages() {
+    let totalDelay = 0;
+    
+    for (const messageObj of messages) {
+        setTimeout(() => showMessage(messageObj), totalDelay);
+        totalDelay += messageObj.duration;
+    }
+
+    // Redirect after the last message
+    setTimeout(redirectToAssistant, totalDelay);
+}
+
+function addMessage(text, duration) {
+    messages.push({ text, duration });
+}
+
+playButton.addEventListener('click', async () => {
+    try {
+        await audio.play();
+        isPlaying = true;
+        playButton.style.display = 'none';
+        audioStatus.textContent = '';
+        playMessages();
+    } catch (error) {
+        audioStatus.textContent = 'Error playing audio: ' + error.message;
+        // Start messages even if audio fails
+        playMessages();
+    }
+});
+
+audio.addEventListener('error', (e) => {
+    let errorMessage = 'Audio error: ';
+    switch (audio.error.code) {
+        case 1: errorMessage += 'Loading failed'; break;
+        case 2: errorMessage += 'Network error'; break;
+        case 3: errorMessage += 'Decoding failed'; break;
+        case 4: errorMessage += 'Audio not supported'; break;
+    }
+    audioStatus.textContent = errorMessage;
+});
+</script>
+</body>
+</html>
